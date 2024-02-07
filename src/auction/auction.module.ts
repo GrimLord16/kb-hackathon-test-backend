@@ -12,4 +12,3 @@ import { Auction, AuctionSchema } from './auction.schema';
   providers: [AuctionService],
 })
 export class AuctionModule {}
-    
