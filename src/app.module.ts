@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { AuctionModule } from './auction/auction.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { BidModule } from './bid/bid.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     MongooseModule.forRoot(process.env.MONGODB_URI ?? '', {
       dbName: 'khb-test',
     }),
+    BidModule,
   ],
   controllers: [AppController],
   providers: [AppService],
