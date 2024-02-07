@@ -10,5 +10,6 @@ import { Auction, AuctionSchema } from './auction.schema';
   ],
   controllers: [AuctionController],
   providers: [AuctionService],
+  exports: [MongooseModule],
 })
 export class AuctionModule {}

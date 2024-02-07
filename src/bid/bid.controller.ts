@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { BidService } from './bid.service';
-import { CreateBidDto } from './create-bid.dto';
+import { CreateBidDto } from './dtos/create-bid.dto';
 import { Bid } from './bid.schema';
 
 @Controller('bid')
@@ -10,11 +10,6 @@ export class BidController {
   @Post()
   create(@Body() createBidDto: CreateBidDto): Promise<Bid> {
     return this.bidService.create(createBidDto);
-  }
-
-  @Get('auction/:auctionId')
-  findAllForAuction(@Param('auctionId') auctionId: string): Promise<Bid[]> {
-    return this.bidService.findAllForAuction(auctionId);
   }
 
   @Get()
