@@ -33,7 +33,7 @@ if ($?) {
     Write-Host "Docker image $imageName built successfully."
     
     # Run the Docker container with the specified port mappings
-    docker run -d -p 5000:3000 $imageName
+    docker run -d -p 5005:3000 $imageName
     Write-Host "Docker container from image $imageName is running. Accessible at http://localhost:5000"
 } else {
     Write-Host "Failed to build the Docker image $imageName."
