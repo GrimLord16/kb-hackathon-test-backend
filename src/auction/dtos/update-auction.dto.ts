@@ -4,5 +4,8 @@ export class UpdateAuctionDto {
     category?: string;
     pictureUrl?: string;
   };
+
+  readonly charity?: boolean;
+  readonly currency?: string;
   // Add any other fields as optional for updating an auction
 }

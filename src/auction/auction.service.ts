@@ -23,6 +23,34 @@ export class AuctionService {
     return auction;
   }
 
+  async findAllWithFilters(filters: any): Promise<Auction[]> {
+    let query = this.auctionModel.find();
+  
+    if (filters.category) {
+      query = query.where('product.category').equals(filters.category);
+    }
+
+    if (filters.name !== undefined) {
+      query = query.where('product.name', new RegExp(filters.name, 'i'));
+    }
+  
+    if (filters.charity !== undefined) {
+      query = query.where('charity').equals(filters.charity);
+    }
+
+    if (filters.currency !== undefined) {
+      query = query.where('currency').equals(filters.currency);
+    }
+  
+    if (filters.orderBy) {
+      const sortOrder = filters.orderBy.startsWith('-') ? 'desc' : 'asc';
+      const fieldName = filters.orderBy.startsWith('-') ? filters.orderBy.substring(1) : filters.orderBy;
+      query = query.sort({ [fieldName]: sortOrder });
+    }
+  
+    return query.exec();
+  }
+
   async findOneWithBids(id: string): Promise<any> {
     const result = await this.auctionModel
       .aggregate()
@@ -40,6 +68,10 @@ export class AuctionService {
     }
 
     return result[0];
+  }
+
+  async findByCategory(category: string): Promise<Auction[]> {
+    return this.auctionModel.find({ 'product.category': category }).exec();
   }
 
   async create(createAuctionDto: CreateAuctionDto): Promise<Auction> {
@@ -62,7 +94,7 @@ export class AuctionService {
 
   async updatePartial(
     id: string,
-    updateAuctionDto: UpdateAuctionDto, 
+    updateAuctionDto: UpdateAuctionDto,
   ): Promise<Auction> {
     const updatedAuction = await this.auctionModel
       .findByIdAndUpdate(id, updateAuctionDto, { new: true })

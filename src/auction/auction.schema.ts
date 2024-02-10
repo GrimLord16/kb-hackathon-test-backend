@@ -23,6 +23,13 @@ export class Auction {
 
   @Prop({ type: [Types.ObjectId], ref: 'Bid', default: [] })
   bids: Bid[];
+
+  @Prop({ required: true, default: false })
+  charity: boolean;
+
+  @Prop({ required: true })
+  currency: string;
+  
   // The createdAt field is automatically managed by Mongoose with { timestamps: true } option in the @Schema decorator.
 }
 
