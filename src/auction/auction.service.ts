@@ -15,38 +15,21 @@ export class AuctionService {
     return this.auctionModel.find().exec();
   }
 
-  async findById(id: string): Promise<Auction> {
-    const auction = await this.auctionModel
-      .findById(id)
-      .populate('createdBy')
-      .exec();
-    if (!auction) {
-      throw new Error(`Auction with ID ${id} not found`);
-    }
-    return auction;
-  }
-
   async findAllWithFilters(filters: any): Promise<Auction[]> {
     let query = this.auctionModel.find();
 
+    // Apply filters as before
     if (filters.category) {
       query = query.where('product.category').equals(filters.category);
     }
-
     if (filters.name !== undefined) {
       query = query.where('product.name', new RegExp(filters.name, 'i'));
     }
-
     if (filters.charity !== undefined) {
       query = query.where('charity').equals(filters.charity);
     }
-
     if (filters.currency !== undefined) {
       query = query.where('currency').equals(filters.currency);
-    }
-
-    if (filters.createdBy !== undefined) {
-      let users = (query = query.where('createdBy').equals(filters.createdBy));
     }
 
     if (filters.orderBy) {
@@ -57,26 +40,33 @@ export class AuctionService {
       query = query.sort({ [fieldName]: sortOrder });
     }
 
+    // Populate and createdBy
+    query = query.populate({
+      path: 'createdBy', // Additionally, populate the createdBy for the auction itself if needed
+      model: 'User', // Adjust 'User' if your user model name is different
+    });
+
     return query.exec();
   }
 
-  async findOneWithBids(id: string): Promise<any> {
+  async findById(id: string): Promise<any> {
     const result = await this.auctionModel
-      .aggregate()
-      .match({ _id: new Types.ObjectId(id) })
-      .lookup({
-        from: 'bids',
-        localField: 'bids',
-        foreignField: '_id',
-        as: 'bids',
+      .findById(id)
+      .populate({
+        path: 'bids', // Populate bids
+        populate: {
+          path: 'createdBy', // Nested populate for createdBy within each bid
+          model: 'User', // Assuming 'User' is the name of your user model
+        },
       })
+      .populate('createdBy') // Also populate createdBy for the auction itself
       .exec();
 
-    if (!result || result.length === 0) {
+    if (!result) {
       throw new Error(`Auction with ID ${id} not found`);
     }
 
-    return result[0];
+    return result;
   }
 
   async findByUser(userId: string): Promise<Auction[]> {

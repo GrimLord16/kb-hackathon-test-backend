@@ -43,7 +43,7 @@ export class AuctionController {
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Auction> {
-    return this.auctionService.findOneWithBids(id);
+    return this.auctionService.findById(id);
   }
 
   @Put(':id')
