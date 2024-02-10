@@ -11,7 +11,7 @@ import { BidModule } from './bid/bid.module';
     AuctionModule,
     ConfigModule.forRoot(),
     MongooseModule.forRoot(process.env.MONGODB_URI ?? '', {
-      dbName: 'khb-test',
+      dbName: 'kbh-test',
     }),
     BidModule,
   ],
