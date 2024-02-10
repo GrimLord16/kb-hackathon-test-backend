@@ -4,6 +4,7 @@ import { BidController } from './bid.controller';
 import { BidService } from './bid.service';
 import { Bid, BidSchema } from './bid.schema'; // Import your Bid schema
 import { AuctionModule } from 'src/auction/auction.module';
+import { BidGateway } from './bid.gateway';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { AuctionModule } from 'src/auction/auction.module';
     AuctionModule,
   ],
   controllers: [BidController],
-  providers: [BidService],
+  providers: [BidService, BidGateway],
 })
 export class BidModule {}

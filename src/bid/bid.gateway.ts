@@ -13,19 +13,19 @@ export class BidGateway implements OnGatewayInit {
     server: Server;
     
     async afterInit(server: Server) {
-        server.on('connection', async (socket: Socket) => {
-          console.log("Connected successfully");
-          socket.emit('connected', socket.id);
-        });
-    
-        server.on('disconnect', (socket: Socket) => {
-          console.log(socket.id + ' disconnected');
-        });
+      server.on('connection', async (socket: Socket) => {
+        console.log("Connected successfully");
+        socket.emit('connected', socket.id);
+      });
+  
+      server.on('disconnect', (socket: Socket) => {
+        console.log(socket.id + ' disconnected');
+      });
     }
     
     @SubscribeMessage('createBid')
-    handleMessage(@MessageBody() bid: CreateBidDto) {
-        console.log('Message: ', bid);
-        this.server.emit('message', this.bidService.create(bid));
+    async handleMessage(@MessageBody() bid: CreateBidDto) {
+      console.log('Message: ', bid);
+      this.server.emit('bid', await this.bidService.create(bid));
     }
 }
