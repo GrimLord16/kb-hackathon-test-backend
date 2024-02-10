@@ -12,8 +12,8 @@ export class BidController {
   constructor(private readonly bidService: BidService) {}
 
   @Post()
-  create(@Body() createBidDto: CreateBidDto): Promise<Bid> {
-    return this.bidService.create(createBidDto);
+  create(@Body() createBidDto: CreateBidDto, @Identify() user: JwtUser): Promise<Bid> {
+    return this.bidService.create(createBidDto, user.id);
   }
 
   @Get()

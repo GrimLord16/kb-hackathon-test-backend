@@ -12,20 +12,42 @@ export class BidService {
     @InjectModel(Auction.name) private auctionModel: Model<Auction>, // Inject the auction model as well
   ) {}
 
-  async create(createBidDto: CreateBidDto): Promise<Bid> {
-    const createdBid = new this.bidModel(createBidDto);
+  async create(createBidDto: CreateBidDto, userId: string): Promise<Bid> {
+    const createdBid = new this.bidModel({
+      ...createBidDto,
+      createdBy: userId, // Assign the userId to the createdBy field
+    });
+
     const bid = await createdBid.save();
 
     await this.auctionModel.findByIdAndUpdate(
       createBidDto.auction,
-      { $push: { bids: bid._id } }, 
+      { $push: { bids: bid._id } },
       { new: true, useFindAndModify: false },
     );
 
-    return bid;
+    return this.findById(bid.id);
   }
 
   async findAll(): Promise<Bid[]> {
     return this.bidModel.find().exec();
+  }
+
+  async findByUser(userId: string): Promise<Bid[]> {
+    return this.bidModel
+      .find({ createdBy: userId })
+      .populate('createdBy')
+      .exec();
+  }
+
+  async findById(bidId: string): Promise<Bid> {
+    const bid = await this.bidModel
+      .findById(bidId)
+      .populate('createdBy')
+      .exec();
+    if (!bid) {
+      throw new Error(`Bid with ID '${bidId}' not found`);
+    }
+    return bid;
   }
 }

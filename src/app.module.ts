@@ -5,6 +5,7 @@ import { AuctionModule } from './auction/auction.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BidModule } from './bid/bid.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { BidModule } from './bid/bid.module';
       dbName: 'kbh-test',
     }),
     BidModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

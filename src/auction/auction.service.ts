@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Auction } from './auction.schema'; // Adjust the import path as necessary
 import { CreateAuctionDto } from './dtos/create-auction.dto';
 import { UpdateAuctionDto } from './dtos/update-auction.dto';
@@ -15,8 +15,11 @@ export class AuctionService {
     return this.auctionModel.find().exec();
   }
 
-  async findOne(id: string): Promise<Auction> {
-    const auction = await this.auctionModel.findById(id).exec();
+  async findById(id: string): Promise<Auction> {
+    const auction = await this.auctionModel
+      .findById(id)
+      .populate('createdBy')
+      .exec();
     if (!auction) {
       throw new Error(`Auction with ID ${id} not found`);
     }
@@ -25,7 +28,7 @@ export class AuctionService {
 
   async findAllWithFilters(filters: any): Promise<Auction[]> {
     let query = this.auctionModel.find();
-  
+
     if (filters.category) {
       query = query.where('product.category').equals(filters.category);
     }
@@ -33,7 +36,7 @@ export class AuctionService {
     if (filters.name !== undefined) {
       query = query.where('product.name', new RegExp(filters.name, 'i'));
     }
-  
+
     if (filters.charity !== undefined) {
       query = query.where('charity').equals(filters.charity);
     }
@@ -41,13 +44,19 @@ export class AuctionService {
     if (filters.currency !== undefined) {
       query = query.where('currency').equals(filters.currency);
     }
-  
+
+    if (filters.createdBy !== undefined) {
+      let users = (query = query.where('createdBy').equals(filters.createdBy));
+    }
+
     if (filters.orderBy) {
       const sortOrder = filters.orderBy.startsWith('-') ? 'desc' : 'asc';
-      const fieldName = filters.orderBy.startsWith('-') ? filters.orderBy.substring(1) : filters.orderBy;
+      const fieldName = filters.orderBy.startsWith('-')
+        ? filters.orderBy.substring(1)
+        : filters.orderBy;
       query = query.sort({ [fieldName]: sortOrder });
     }
-  
+
     return query.exec();
   }
 
@@ -70,13 +79,25 @@ export class AuctionService {
     return result[0];
   }
 
-  async findByCategory(category: string): Promise<Auction[]> {
-    return this.auctionModel.find({ 'product.category': category }).exec();
+  async findByUser(userId: string): Promise<Auction[]> {
+    return this.auctionModel
+      .find({ createdBy: userId })
+      .populate('createdBy')
+      .exec();
   }
 
-  async create(createAuctionDto: CreateAuctionDto): Promise<Auction> {
-    const createdAuction = new this.auctionModel(createAuctionDto);
-    return createdAuction.save();
+  async create(
+    createAuctionDto: CreateAuctionDto,
+    userId: string,
+  ): Promise<Auction> {
+    const createdAuction = new this.auctionModel({
+      ...createAuctionDto,
+      createdBy: userId,
+    });
+
+    const auction = await createdAuction.save();
+
+    return this.findById(auction.id);
   }
 
   async update(

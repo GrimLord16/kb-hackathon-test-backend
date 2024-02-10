@@ -8,8 +8,9 @@ import { BidGateway } from './bid.gateway';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Bid.name, schema: BidSchema }]), // Add this line
-    AuctionModule,
+    MongooseModule.forFeature(
+      [{ name: Bid.name, schema: BidSchema }]),
+      AuctionModule,
   ],
   controllers: [BidController],
   providers: [BidService, BidGateway],

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { Bid } from 'src/bid/bid.schema';
+import { User } from 'src/user/user.schema';
 
 export type ChatDocument = HydratedDocument<Auction>;
 
@@ -29,7 +30,10 @@ export class Auction {
 
   @Prop({ required: true })
   currency: string;
-  
+
+  @Prop({ type: [Types.ObjectId], ref: 'User', required:true })
+  createdBy: User | Types.ObjectId;
+
   // The createdAt field is automatically managed by Mongoose with { timestamps: true } option in the @Schema decorator.
 }
 

@@ -1,10 +1,24 @@
-import { Body, Controller, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { Auction } from './auction.schema';
 import { AuctionService } from './auction.service';
 import { CreateAuctionDto } from './dtos/create-auction.dto';
 import { UpdateAuctionDto } from './dtos/update-auction.dto';
+import { Identify } from 'src/common/identify.decorator';
+import { JwtUser } from 'src/lib/jwt';
+import { JwtAuthGuard } from 'src/guards/auth.guard';
 
 @Controller('auction')
+@UseGuards(JwtAuthGuard)
 export class AuctionController {
   constructor(private readonly auctionService: AuctionService) {}
 
@@ -14,19 +28,22 @@ export class AuctionController {
     @Query('name') name?: string,
     @Query('charity') charity?: boolean,
     @Query('currency') currency?: string,
+    @Query('createdBy') createdBy?: number,
     @Query('orderBy') orderBy?: string,
   ): Promise<Auction[]> {
-    return this.auctionService.findAllWithFilters({ category, name, charity, currency, orderBy });
+    return this.auctionService.findAllWithFilters({
+      category,
+      name,
+      charity,
+      currency,
+      createdBy,
+      orderBy,
+    });
   }
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Auction> {
     return this.auctionService.findOneWithBids(id);
-  }
-
-  @Get('/category/:category')
-  findByCategory(@Param('category') category: string): Promise<Auction[]> {
-    return this.auctionService.findByCategory(category);
   }
 
   @Put(':id')
@@ -46,7 +63,10 @@ export class AuctionController {
   }
 
   @Post()
-  create(@Body() createAuctionDto: CreateAuctionDto): Promise<Auction> {
-    return this.auctionService.create(createAuctionDto);
+  create(
+    @Body() createAuctionDto: CreateAuctionDto,
+    @Identify() user: JwtUser,
+  ): Promise<Auction> {
+    return this.auctionService.create(createAuctionDto, user.id);
   }
 }
