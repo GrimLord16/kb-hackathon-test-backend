@@ -55,11 +55,11 @@ export class AuctionService {
     query = query
       .populate({
         path: 'createdBy',
-        select: 'name email -_id', // Adjust fields as needed
+        model: 'User',
       })
       .populate({
         path: 'product.category',
-        select: 'name -_id', // Adjust fields as needed
+        model: 'Category',
       });
 
     const results = await query.exec();
@@ -93,7 +93,7 @@ export class AuctionService {
   async findByUser(userId: string): Promise<Auction[]> {
     return this.auctionModel
       .find({ createdBy: userId })
-      .populate('createdBy')
+      .populate('createdBy', 'User')
       .exec();
   }
 

@@ -58,6 +58,8 @@ export class BidGateway implements OnGatewayInit {
     const user = socket.user;
     console.log('Got \"createBid\" message from user: ' + user.email);
     console.log('Message: ', bid);
-    this.server.to([bid.auction, 'default']).emit('newBid', await this.bidService.create(bid, user.id));
+    const newBid = await this.bidService.create(bid, user.id);
+    this.server.to([bid.auction, 'default']).emit('newBid', newBid)
+    return true;
   }
 }
