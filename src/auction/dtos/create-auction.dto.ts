@@ -8,5 +8,12 @@ export class CreateAuctionDto {
   readonly charity?: boolean;
 
   readonly currency: string;
-  // Add any other fields you require for creating an auction
+
+  readonly minPrice: number;
+
+  readonly minBidStep: number;
+
+  readonly currentMaxBidPrice: number;
+
+  readonly closeDate: Date;
 }

@@ -18,7 +18,6 @@ import { JwtUser } from 'src/lib/jwt';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
 
 @Controller('auction')
-@UseGuards(JwtAuthGuard)
 export class AuctionController {
   constructor(private readonly auctionService: AuctionService) {}
 
@@ -47,6 +46,7 @@ export class AuctionController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string,
     @Body() updateAuctionDto: CreateAuctionDto,
@@ -55,20 +55,20 @@ export class AuctionController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(
     @Body() createAuctionDto: CreateAuctionDto,
     @Identify() user: JwtUser,
   ): Promise<Auction> {
-    // Optionally, validate the category ID here before creating the auction
     return this.auctionService.create(createAuctionDto, user.id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   updatePartial(
     @Param('id') id: string,
     @Body() updateAuctionDto: UpdateAuctionDto,
   ): Promise<Auction> {
-    // Validation of category ID can also be performed here if updating the category
     return this.auctionService.updatePartial(id, updateAuctionDto);
   }
 }

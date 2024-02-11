@@ -4,8 +4,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 export class Category {
   @Prop({ required: true })
   name: string;
-
-  // The createdAt field is automatically managed by Mongoose with { timestamps: true } option in the @Schema decorator.
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

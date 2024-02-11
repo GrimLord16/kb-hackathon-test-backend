@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User } from './user.schema';
+import { HttpStatus, HttpException } from '@nestjs/common';
 
 @Injectable()
 export class UserService {
@@ -10,7 +11,10 @@ export class UserService {
   async findOne(id: string): Promise<User> {
     const user = await this.userModel.findById(id).exec();
     if (!user) {
-      throw new Error(`User with ID ${id} not found`);
+      throw new HttpException(
+        `User with ID ${id} not found`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return user;
   }

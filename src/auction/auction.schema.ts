@@ -6,7 +6,6 @@ import { Category } from 'src/category/category.shema';
 
 export type ChatDocument = HydratedDocument<Auction>;
 
-// Define a class for the inner object 'product'
 class Product {
   @Prop({ required: true })
   name: string;
@@ -34,6 +33,18 @@ export class Auction {
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   createdBy: User | Types.ObjectId;
+
+  @Prop({ required: true })
+  minPrice: number;
+
+  @Prop({ required: true })
+  minBidStep: number;
+
+  @Prop({ required: true })
+  currentMaxBidPrice: number;
+
+  @Prop({ required: true })
+  closeDate: Date;
 
   // The createdAt field is automatically managed by Mongoose with { timestamps: true } option in the @Schema decorator.
 }
