@@ -5,7 +5,7 @@ import { Auction } from './auction.schema'; // Adjust the import path as necessa
 import { CreateAuctionDto } from './dtos/create-auction.dto';
 import { UpdateAuctionDto } from './dtos/update-auction.dto';
 import { Category } from 'src/category/category.shema';
-
+import { HttpStatus, HttpException } from '@nestjs/common';
 
 @Injectable()
 export class AuctionService {
@@ -23,7 +23,9 @@ export class AuctionService {
 
     // If category names are provided, fetch corresponding category IDs
     if (filters.category) {
-      const categoryNames = filters.category.split(','); // Assuming 'army,tech' format
+      const categoryNames = filters.category
+        .split(',')
+        .map((name: string) => new RegExp(name.trim(), 'i')); // Create regex for case-insensitive match
       const categories = await this.categoryModel.find({
         name: { $in: categoryNames },
       });
@@ -81,7 +83,10 @@ export class AuctionService {
       .exec();
 
     if (!auction) {
-      throw new Error(`Auction with ID ${id} not found`);
+      throw new HttpException(
+        `Auction with ID ${id} not found`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     return auction;
@@ -116,7 +121,10 @@ export class AuctionService {
       .findByIdAndUpdate(id, updateAuctionDto, { new: true })
       .exec();
     if (!updatedAuction) {
-      throw new Error(`Auction with ID ${id} not found`);
+      throw new HttpException(
+        `Auction with ID ${id} not found`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return updatedAuction;
   }
@@ -129,7 +137,10 @@ export class AuctionService {
       .findByIdAndUpdate(id, updateAuctionDto, { new: true })
       .exec();
     if (!updatedAuction) {
-      throw new Error(`Auction with ID ${id} not found`);
+      throw new HttpException(
+        `Auction with ID ${id} not found`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return updatedAuction;
   }

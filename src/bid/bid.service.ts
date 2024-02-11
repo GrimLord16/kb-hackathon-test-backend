@@ -27,7 +27,7 @@ export class BidService {
     if (createBidDto.amount <= minimumRequiredBid) {
       throw new HttpException(
         `Your bid of ${createBidDto.amount} is not sufficient. The minimum required bid is ${minimumRequiredBid}.`,
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.BAD_REQUEST
       );
     }
 

@@ -1,4 +1,5 @@
 import { verify } from 'jsonwebtoken';
+import { HttpStatus, HttpException } from '@nestjs/common';
 
 export type JwtUser = {
   id: string;
@@ -17,7 +18,10 @@ export type JwtPayload = {
 
 export const verifyJwt = (token: string) => {
   if (!process.env.JWT_SECRET) {
-    throw new Error('JWT_SECRET must be defined');
+    throw new HttpException(
+      'JWT_SECRET must be defined',
+      HttpStatus.BAD_REQUEST,
+    );
   }
   const data = verify(token, process.env.JWT_SECRET, {
     algorithms: ['HS512'],

@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Category } from './category.shema';
 import { CreateCategoryDto } from './dtos/create-category.dto';
+import { HttpStatus, HttpException } from '@nestjs/common';
 
 @Injectable()
 export class CategoryService {
@@ -25,7 +26,10 @@ export class CategoryService {
   async findById(id: string): Promise<Category> {
     const category = await this.categoryModel.findById(id).exec();
     if (!category) {
-      throw new Error(`Category with ID "${id}" not found`);
+      throw new HttpException(
+        `Category with ID "${id}" not found`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
     return category;
   }
@@ -40,7 +44,10 @@ export class CategoryService {
       }
       return { deleted: true };
     } catch (error) {
-      throw new Error(`Failed to delete the category: ${error.message}`);
+      throw new HttpException(
+        `Failed to delete the category: ${error.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }
