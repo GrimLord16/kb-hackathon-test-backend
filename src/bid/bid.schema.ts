@@ -8,7 +8,7 @@ export class Bid extends Document {
   @Prop({ required: true })
   amount: number;
 
-  @Prop({ type: [Types.ObjectId], ref: 'User', required:true })
+  @Prop({ type: Types.ObjectId, ref: 'User', required:true })
   createdBy: User | Types.ObjectId;
 
   // not used for now
