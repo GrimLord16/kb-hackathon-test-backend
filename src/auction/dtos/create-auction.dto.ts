@@ -13,7 +13,5 @@ export class CreateAuctionDto {
 
   readonly minBidStep: number;
 
-  readonly currentMaxBidPrice: number;
-
   readonly closeDate: Date;
 }

@@ -120,6 +120,7 @@ export class AuctionService {
   ): Promise<Auction> {
     const createdAuction = new this.auctionModel({
       ...createAuctionDto,
+      currentMaxBidPrice: createAuctionDto.minPrice,
       createdBy: userId,
     });
 
