@@ -75,6 +75,7 @@ export class AuctionService {
       })
       .populate({
         path: 'bids',
+        options: { sort: { 'createdAt': -1 } },
         populate: {
           path: 'createdBy',
           model: 'User',

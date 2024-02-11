@@ -18,11 +18,11 @@ import { JwtUser } from 'src/lib/jwt';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
 
 @Controller('auction')
-@UseGuards(JwtAuthGuard)
 export class AuctionController {
   constructor(private readonly auctionService: AuctionService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   findAll(
     @Query('category') category?: string,
     @Query('name') name?: string,
@@ -47,6 +47,7 @@ export class AuctionController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string,
     @Body() updateAuctionDto: CreateAuctionDto,
@@ -55,6 +56,7 @@ export class AuctionController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(
     @Body() createAuctionDto: CreateAuctionDto,
     @Identify() user: JwtUser,
@@ -64,6 +66,7 @@ export class AuctionController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   updatePartial(
     @Param('id') id: string,
     @Body() updateAuctionDto: UpdateAuctionDto,
