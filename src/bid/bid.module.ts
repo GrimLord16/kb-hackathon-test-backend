@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose'; // Import MongooseModule
+import { MongooseModule } from '@nestjs/mongoose';
 import { BidController } from './bid.controller';
 import { BidService } from './bid.service';
-import { Bid, BidSchema } from './bid.schema'; // Import your Bid schema
+import { Bid, BidSchema } from './bid.schema';
 import { AuctionModule } from 'src/auction/auction.module';
 import { BidGateway } from './bid.gateway';
 

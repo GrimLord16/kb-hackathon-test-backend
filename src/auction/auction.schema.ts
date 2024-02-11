@@ -6,7 +6,6 @@ import { Category } from 'src/category/category.shema';
 
 export type ChatDocument = HydratedDocument<Auction>;
 
-// Define a class for the inner object 'product'
 class Product {
   @Prop({ required: true })
   name: string;

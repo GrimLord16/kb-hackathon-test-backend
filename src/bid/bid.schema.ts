@@ -11,7 +11,6 @@ export class Bid extends Document {
   @Prop({ type: Types.ObjectId, ref: 'User', required:true })
   createdBy: User | Types.ObjectId;
 
-  // not used for now
   @Prop({ type: Types.ObjectId, ref: 'Auction', required: true })
   auction: Auction | Types.ObjectId;
 }

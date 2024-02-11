@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Auction } from './auction.schema'; // Adjust the import path as necessary
+import { Auction } from './auction.schema';
 import { CreateAuctionDto } from './dtos/create-auction.dto';
 import { UpdateAuctionDto } from './dtos/update-auction.dto';
 import { Category } from 'src/category/category.shema';
@@ -25,7 +25,7 @@ export class AuctionService {
     if (filters.category) {
       const categoryNames = filters.category
         .split(',')
-        .map((name: string) => new RegExp(name.trim(), 'i')); // Create regex for case-insensitive match
+        .map((name: string) => new RegExp(name.trim(), 'i'));
       const categories = await this.categoryModel.find({
         name: { $in: categoryNames },
       });
@@ -49,7 +49,6 @@ export class AuctionService {
       query.where('product.category', { $in: categoryIds });
     }
 
-    // Populate 'createdBy' and 'product.category'
     query = query
       .populate({
         path: 'createdBy',

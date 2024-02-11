@@ -43,7 +43,7 @@ export class BidService {
       createBidDto.auction,
       {
         $push: { bids: bid._id },
-        $set: { currentMaxBidPrice: createBidDto.amount }, // Update the currentMaxBidPrice
+        $set: { currentMaxBidPrice: createBidDto.amount },
       },
       { new: true, useFindAndModify: false },
     );

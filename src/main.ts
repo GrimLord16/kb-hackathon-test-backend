@@ -3,8 +3,8 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 
 const corsOptions = {
-  origin: 'http://localhost:3000', // Allow only this origin
-  credentials: true, // Reflect the request's credentials mode
+  origin: 'http://localhost:3000',
+  credentials: true,
 };
 
 async function bootstrap() {

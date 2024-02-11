@@ -42,7 +42,6 @@ export class BidGateway implements OnGatewayInit {
 
       try {
         const payload = verifyJwt(query.auth_token);
-        // TODO: It's probably better to store socket id in the user db object
         socket.user = payload.user;
       } catch (error) {
         console.error('Token validation failed', error);
