@@ -49,6 +49,10 @@ export class AuctionService {
       query.where('product.category', { $in: categoryIds });
     }
 
+    if (filters.createdBy !== undefined) {
+      query.where('createdBy', filters.createdBy);
+    }
+
     query = query
       .populate({
         path: 'createdBy',
