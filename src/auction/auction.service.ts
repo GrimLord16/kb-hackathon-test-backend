@@ -6,12 +6,14 @@ import { CreateAuctionDto } from './dtos/create-auction.dto';
 import { UpdateAuctionDto } from './dtos/update-auction.dto';
 import { Category } from 'src/category/category.shema';
 import { HttpStatus, HttpException } from '@nestjs/common';
+import { User } from 'src/user/user.schema';
 
 @Injectable()
 export class AuctionService {
   constructor(
     @InjectModel(Auction.name) private auctionModel: Model<Auction>,
     @InjectModel(Category.name) private categoryModel: Model<Category>,
+    @InjectModel(User.name) private userModel: Model<User>, 
   ) {}
 
   async findAll(): Promise<Auction[]> {
@@ -50,7 +52,17 @@ export class AuctionService {
     }
 
     if (filters.createdBy !== undefined) {
-      query.where('createdBy', filters.createdBy);
+      const users = await this.userModel.find({
+        email: new RegExp(filters.createdBy, 'i'),
+      });
+      const userIds = users.map((user) => user._id.toString());
+
+      if (userIds.length) {
+        query.where('createdBy', { $in: userIds })
+      } else {
+        // No users found with that email, return empty result set
+        return [];
+      }
     }
 
     query = query
@@ -108,6 +120,7 @@ export class AuctionService {
   ): Promise<Auction> {
     const createdAuction = new this.auctionModel({
       ...createAuctionDto,
+      currentMaxBidPrice: createAuctionDto.minPrice,
       createdBy: userId,
     });
 
