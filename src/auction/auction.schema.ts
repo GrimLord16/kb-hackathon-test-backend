@@ -11,7 +11,7 @@ class Product {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ type: Types.ObjectId, ref: "Category", required:true })
+  @Prop({ type: Types.ObjectId, ref: 'Category', required: true })
   category: Category | Types.ObjectId;
 
   @Prop()
@@ -32,7 +32,7 @@ export class Auction {
   @Prop({ required: true })
   currency: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required:true })
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   createdBy: User | Types.ObjectId;
 
   // The createdAt field is automatically managed by Mongoose with { timestamps: true } option in the @Schema decorator.

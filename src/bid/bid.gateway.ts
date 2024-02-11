@@ -1,4 +1,11 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody, ConnectedSocket, OnGatewayInit, WebSocketServer } from '@nestjs/websockets';
+import {
+  WebSocketGateway,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
+  OnGatewayInit,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { CreateBidDto } from './dtos/create-bid.dto';
 import { BidService } from './bid.service';
@@ -11,7 +18,7 @@ type CreateBidQuery = {
 
 declare module 'socket.io' {
   export interface Socket {
-    user: JwtUser; 
+    user: JwtUser;
   }
 }
 
@@ -19,9 +26,9 @@ declare module 'socket.io' {
 export class BidGateway implements OnGatewayInit {
   constructor(private readonly bidService: BidService) {}
 
-  @WebSocketServer() 
+  @WebSocketServer()
   server: Server;
-  
+
   async afterInit(server: Server) {
     server.on('connection', async (socket: Socket) => {
       const query = socket.handshake.query as CreateBidQuery;
@@ -44,7 +51,14 @@ export class BidGateway implements OnGatewayInit {
       }
 
       socket.join(query.auction ?? 'default');
-      console.log("Connected successfully and joined room: " + query.auction + " with user: " + socket.user.email + " and id: " + socket.id);
+      console.log(
+        'Connected successfully and joined room: ' +
+          query.auction +
+          ' with user: ' +
+          socket.user.email +
+          ' and id: ' +
+          socket.id,
+      );
       socket.emit('connected', socket.id);
     });
 
@@ -52,14 +66,17 @@ export class BidGateway implements OnGatewayInit {
       console.log(socket.id + ' disconnected');
     });
   }
-  
+
   @SubscribeMessage('createBid')
-  async handleMessage(@MessageBody() bid: CreateBidDto, @ConnectedSocket() socket: Socket) {
+  async handleMessage(
+    @MessageBody() bid: CreateBidDto,
+    @ConnectedSocket() socket: Socket,
+  ) {
     const user = socket.user;
-    console.log('Got \"createBid\" message from user: ' + user.email);
+    console.log('Got "createBid" message from user: ' + user.email);
     console.log('Message: ', bid);
     const newBid = await this.bidService.create(bid, user.id);
-    this.server.to([bid.auction, 'default']).emit('newBid', newBid)
+    this.server.to([bid.auction, 'default']).emit('newBid', newBid);
     return true;
   }
 }

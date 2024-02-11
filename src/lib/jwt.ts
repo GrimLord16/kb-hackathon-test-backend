@@ -19,8 +19,8 @@ export const verifyJwt = (token: string) => {
   if (!process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET must be defined');
   }
-    const data = verify(token, process.env.JWT_SECRET, {
-      algorithms: ['HS512'],
-    });
+  const data = verify(token, process.env.JWT_SECRET, {
+    algorithms: ['HS512'],
+  });
   return data as JwtPayload;
 };
