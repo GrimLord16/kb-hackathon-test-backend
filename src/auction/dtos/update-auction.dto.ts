@@ -6,6 +6,14 @@ export class UpdateAuctionDto {
   };
 
   readonly charity?: boolean;
+
   readonly currency?: string;
-  // Add any other fields as optional for updating an auction
+
+  readonly minPrice: number;
+
+  readonly minBidStep: number;
+
+  readonly currentMaxBidPrice: number;
+
+  readonly closeDate: Date;
 }
