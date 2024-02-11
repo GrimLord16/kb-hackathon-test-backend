@@ -6,18 +6,12 @@ import { CreateAuctionDto } from './dtos/create-auction.dto';
 import { UpdateAuctionDto } from './dtos/update-auction.dto';
 import { Category } from 'src/category/category.shema';
 
-interface MatchStage {
-  charity?: { $eq: boolean };
-  currency?: { $regex: RegExp };
-  'product.name'?: { $regex: RegExp };
-  'product.category'?: { $in: RegExp[] };
-  // Add any other fields that you might dynamically add to matchStage
-}
 
 @Injectable()
 export class AuctionService {
   constructor(
     @InjectModel(Auction.name) private auctionModel: Model<Auction>,
+    @InjectModel(Category.name) private categoryModel: Model<Category>,
   ) {}
 
   async findAll(): Promise<Auction[]> {
@@ -25,25 +19,27 @@ export class AuctionService {
   }
 
   async findAllWithFilters(filters: any): Promise<Auction[]> {
-    // Explicitly declare 'categoryIds' as an array of strings
-    let categoryIds: string[] = []; // This change addresses the TypeScript errors
+    let categoryIds: string[] = [];
 
     // If category names are provided, fetch corresponding category IDs
     if (filters.category) {
+      const categoryNames = filters.category.split(','); // Assuming 'army,tech' format
+      const categories = await this.categoryModel.find({
+        name: { $in: categoryNames },
+      });
+      categoryIds = categories.map((cat) => cat._id.toString());
     }
 
-    // Build the initial query with case-insensitive matching for the product name
     let query = this.auctionModel.find();
 
-    // Apply direct filters on Auction model fields
     if (filters.charity !== undefined) {
       query.where('charity', filters.charity === 'true' ? true : false);
     }
     if (filters.currency !== undefined) {
-      query.where('currency', new RegExp(filters.currency, 'i')); // Case-insensitive match for currency
+      query.where('currency', new RegExp(filters.currency, 'i'));
     }
     if (filters.name !== undefined) {
-      query.where('product.name', { $regex: filters.name, $options: 'i' }); // Case-insensitive match for product name
+      query.where('product.name', { $regex: filters.name, $options: 'i' });
     }
 
     // Filter by category IDs if categories were found
@@ -75,7 +71,7 @@ export class AuctionService {
       })
       .populate({
         path: 'bids',
-        options: { sort: { 'createdAt': -1 } },
+        options: { sort: { createdAt: -1 } },
         populate: {
           path: 'createdBy',
           model: 'User',
