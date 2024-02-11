@@ -1,9 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Auction } from './auction.schema'; // Adjust the import path as necessary
 import { CreateAuctionDto } from './dtos/create-auction.dto';
 import { UpdateAuctionDto } from './dtos/update-auction.dto';
+import { Category } from 'src/category/category.shema';
+
+interface MatchStage {
+  charity?: { $eq: boolean };
+  currency?: { $regex: RegExp };
+  'product.name'?: { $regex: RegExp };
+  'product.category'?: { $in: RegExp[] };
+  // Add any other fields that you might dynamically add to matchStage
+}
 
 @Injectable()
 export class AuctionService {
@@ -16,57 +25,69 @@ export class AuctionService {
   }
 
   async findAllWithFilters(filters: any): Promise<Auction[]> {
+    // Explicitly declare 'categoryIds' as an array of strings
+    let categoryIds: string[] = []; // This change addresses the TypeScript errors
+
+    // If category names are provided, fetch corresponding category IDs
+    if (filters.category) {
+    }
+
+    // Build the initial query with case-insensitive matching for the product name
     let query = this.auctionModel.find();
 
-    // Apply filters as before
-    if (filters.category) {
-      query = query.where('product.category').equals(filters.category);
-    }
-    if (filters.name !== undefined) {
-      query = query.where('product.name', new RegExp(filters.name, 'i'));
-    }
+    // Apply direct filters on Auction model fields
     if (filters.charity !== undefined) {
-      query = query.where('charity').equals(filters.charity);
+      query.where('charity', filters.charity === 'true' ? true : false);
     }
     if (filters.currency !== undefined) {
-      query = query.where('currency').equals(filters.currency);
+      query.where('currency', new RegExp(filters.currency, 'i')); // Case-insensitive match for currency
+    }
+    if (filters.name !== undefined) {
+      query.where('product.name', { $regex: filters.name, $options: 'i' }); // Case-insensitive match for product name
     }
 
-    if (filters.orderBy) {
-      const sortOrder = filters.orderBy.startsWith('-') ? 'desc' : 'asc';
-      const fieldName = filters.orderBy.startsWith('-')
-        ? filters.orderBy.substring(1)
-        : filters.orderBy;
-      query = query.sort({ [fieldName]: sortOrder });
+    // Filter by category IDs if categories were found
+    if (categoryIds.length > 0) {
+      query.where('product.category', { $in: categoryIds });
     }
 
-    // Populate and createdBy
-    query = query.populate({
-      path: 'createdBy', // Additionally, populate the createdBy for the auction itself if needed
-      model: 'User', // Adjust 'User' if your user model name is different
-    });
+    // Populate 'createdBy' and 'product.category'
+    query = query
+      .populate({
+        path: 'createdBy',
+        select: 'name email -_id', // Adjust fields as needed
+      })
+      .populate({
+        path: 'product.category',
+        select: 'name -_id', // Adjust fields as needed
+      });
 
-    return query.exec();
+    const results = await query.exec();
+    return results;
   }
 
-  async findById(id: string): Promise<any> {
-    const result = await this.auctionModel
+  async findById(id: string): Promise<Auction> {
+    const auction = await this.auctionModel
       .findById(id)
       .populate({
-        path: 'bids', // Populate bids
+        path: 'product.category',
+        model: 'Category',
+      })
+      .populate({
+        path: 'bids',
         populate: {
-          path: 'createdBy', // Nested populate for createdBy within each bid
-          model: 'User', // Assuming 'User' is the name of your user model
+          path: 'createdBy',
+          model: 'User',
         },
       })
-      .populate('createdBy') // Also populate createdBy for the auction itself
+      .populate('createdBy', 'User')
       .exec();
 
-    if (!result) {
+    if (!auction) {
       throw new Error(`Auction with ID ${id} not found`);
     }
 
-    return result;
+    return auction;
   }
 
   async findByUser(userId: string): Promise<Auction[]> {

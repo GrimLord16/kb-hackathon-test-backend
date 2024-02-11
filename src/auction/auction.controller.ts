@@ -54,19 +54,21 @@ export class AuctionController {
     return this.auctionService.update(id, updateAuctionDto);
   }
 
-  @Patch(':id')
-  updatePartial(
-    @Param('id') id: string,
-    @Body() updateAuctionDto: UpdateAuctionDto,
-  ): Promise<Auction> {
-    return this.auctionService.updatePartial(id, updateAuctionDto);
-  }
-
   @Post()
   create(
     @Body() createAuctionDto: CreateAuctionDto,
     @Identify() user: JwtUser,
   ): Promise<Auction> {
+    // Optionally, validate the category ID here before creating the auction
     return this.auctionService.create(createAuctionDto, user.id);
+  }
+
+  @Patch(':id')
+  updatePartial(
+    @Param('id') id: string,
+    @Body() updateAuctionDto: UpdateAuctionDto,
+  ): Promise<Auction> {
+    // Validation of category ID can also be performed here if updating the category
+    return this.auctionService.updatePartial(id, updateAuctionDto);
   }
 }
