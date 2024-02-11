@@ -3,11 +3,11 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 
 const corsOptions = {
-  origin: [
-    'http://localhost:3000',
-    'https://kb-hackathon-test.vercel.app',
-    process.env.ALLOWED_ORIGIN ?? '',
-  ],
+  // origin: [
+  //   'http://localhost:3000',
+  //   'https://kb-hackathon-test.vercel.app',
+  //   process.env.ALLOWED_ORIGIN ?? '',
+  // ],
   credentials: true,
 };
 
