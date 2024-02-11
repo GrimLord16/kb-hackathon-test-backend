@@ -9,6 +9,7 @@ export class JwtAuthGuard implements CanActivate {
 
     if (!token) {
       console.log('No token found in request cookies');
+      console.log("request cookies: ", request.cookies);
       return false;
     }
 
