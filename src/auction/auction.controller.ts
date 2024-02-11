@@ -22,7 +22,6 @@ export class AuctionController {
   constructor(private readonly auctionService: AuctionService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   findAll(
     @Query('category') category?: string,
     @Query('name') name?: string,
