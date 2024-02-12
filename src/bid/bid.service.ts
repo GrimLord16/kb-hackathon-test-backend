@@ -24,7 +24,7 @@ export class BidService {
 
     // Check if the bid is higher than currentMaxBidPrice + minBidStep
     const minimumRequiredBid = auction.currentMaxBidPrice + auction.minBidStep;
-    if (createBidDto.amount <= minimumRequiredBid) {
+    if (createBidDto.amount < minimumRequiredBid) {
       throw new HttpException(
         `Your bid of ${createBidDto.amount} is not sufficient. The minimum required bid is ${minimumRequiredBid}.`,
         HttpStatus.BAD_REQUEST
