@@ -4,8 +4,10 @@ import { verifyJwt } from 'src/lib/jwt';
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext) {
+
     const request = context.switchToHttp().getRequest();
-    const token = request.cookies['auth_token'];
+    // It doesn't work on production, so we need backup method :(
+    const token = request.cookies['auth_token'] ?? request.body.auth_token;
 
     if (!token) {
       console.log('No token found in request cookies');
